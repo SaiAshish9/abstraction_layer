@@ -61,7 +61,7 @@ class Modal2 extends StatelessWidget {
                               banner: true,
                               color: const Color(0xFF7d7290)),
                           Container(
-                              padding: const EdgeInsets.only(right: 18),
+                              padding: const EdgeInsets.only(right: 9),
                               child: ScrollCard(
                                 size: size,
                                 price: "₹8,208",
