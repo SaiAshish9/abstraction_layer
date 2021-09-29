@@ -25,6 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void setCurrent(int x) {
+    setState(() {
+      current = x;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -55,30 +61,57 @@ class _HomeScreenState extends State<HomeScreen> {
               top: size.height * 0.12,
               right: 0,
               left: 0,
-              child: Modal(
-                  size: size,
-                  height: size.height * 0.8,
-                  opacity: 0.3,
-                  showArrow: current > 0,
-                  child: const SizedBox(
-                    child: null,
-                  ),
-                  text: 'credit amount')),
+              child: GestureDetector(
+                onTap: () {
+                  if (current > 0) setCurrent(0);
+                },
+                child: Modal(
+                    size: size,
+                    height: size.height * 0.8,
+                    opacity: 0.3,
+                    showArrow: current > 0,
+                    child: const SizedBox(
+                      child: null,
+                    ),
+                    text: 'credit amount'),
+              )),
           Container(
             child: current > 0
                 ? Positioned(
                     top: size.height * 0.24,
                     right: 0,
                     left: 0,
-                    child: Modal(
-                        size: size,
-                        height: size.height * 0.8,
-                        opacity: 0.6,
-                        showArrow: true,
-                        child: const SizedBox(
-                          child: null,
-                        ),
-                        text: 'EMI'))
+                    child: GestureDetector(
+                      onTap: () {
+                        if (current > 1) setCurrent(1);
+                      },
+                      child: Modal(
+                          size: size,
+                          height: size.height * 0.8,
+                          opacity: 0.6,
+                          showArrow: true,
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "EMI",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Color(0xFF738594)),
+                                  ),
+                                  SvgPicture.asset(
+                                      'assets/images/arrow-ios-downward.svg',
+                                      width: 18),
+                                ],
+                              )
+                            ],
+                          ),
+                          text: 'EMI'),
+                    ))
                 : null,
           ),
           Container(
@@ -94,7 +127,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         text: 'where should we send the money?'))
                 : null,
           ),
-          BottomButton(size: size, onPress: updateCurrent)
+          BottomButton(
+            size: size,
+            onPress: updateCurrent,
+            current: current,
+          )
         ],
       )),
     );
@@ -141,9 +178,10 @@ class Modal extends StatelessWidget {
 }
 
 class Modal3 extends StatelessWidget {
-  const Modal3({
-    Key? key,
-  }) : super(key: key);
+  const Modal3({Key? key, this.text = 'where we should we send the money?'})
+      : super(key: key);
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +189,26 @@ class Modal3 extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
+            margin: const EdgeInsets.symmetric(vertical: 7),
             padding: const EdgeInsets.only(right: 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      text,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: Color(0xFF738594)),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
                 const Text(
                     "amount will be credited to this bank account, EMI will also be debited from this bank account",
                     style: TextStyle(color: Color(0xFF3f4759), fontSize: 12)),
@@ -225,13 +278,26 @@ class Modal3 extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class BottomButton extends StatelessWidget {
-  const BottomButton({Key? key, required this.size, required this.onPress})
+  BottomButton(
+      {Key? key,
+      required this.size,
+      required this.current,
+      required this.onPress})
       : super(key: key);
 
   final Size size;
   final Function onPress;
-// Procees to EMI selection
+
+  final int current;
+
+  List data = [
+    'Procees to EMI selection',
+    'Select your bank account',
+    'Tap for 1-click KYC'
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -252,9 +318,9 @@ class BottomButton extends StatelessWidget {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(18.0),
                   topRight: Radius.circular(18.0))),
-          child: const Align(
-            child: Text('Tap for 1-click KYC',
-                style: TextStyle(
+          child: Align(
+            child: Text(data[current],
+                style: const TextStyle(
                     color: Color(0xFFb0a4bd), fontWeight: FontWeight.bold)),
           ),
         ),
